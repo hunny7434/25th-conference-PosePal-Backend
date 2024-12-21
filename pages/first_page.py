@@ -61,8 +61,10 @@ def first_page():
                     st.error("Failed to capture video.")
                     break
 
+                flipped_frame = cv2.flip(frame, 1)
+
                 # 모델로 프레임 처리
-                processed_frame = process_frame_with_model(frame)
+                processed_frame = process_frame_with_model(flipped_frame)
 
                 # 프레임을 RGB로 변환 후 Streamlit에 표시
                 frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
@@ -74,7 +76,7 @@ def first_page():
                     fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 코덱 설정
                     temp_video_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
                     st.session_state.video_path = temp_video_file.name
-                    video_writer = cv2.VideoWriter(temp_video_file.name, fourcc, 20.0, (frame.shape[1], frame.shape[0]))
+                    video_writer = cv2.VideoWriter(temp_video_file.name, fourcc, 20.0, (flipped_frame.shape[1], flipped_frame.shape[0]))
 
                     if not video_writer.isOpened():
                         print("Error: VideoWriter failed to initialize.")
@@ -82,7 +84,7 @@ def first_page():
                         print(f"VideoWriter initialized successfully. Saving to: {st.session_state.video_path}")
 
                 # 원본 프레임 저장
-                video_writer.write(frame)
+                video_writer.write(flipped_frame)
 
         finally:
             print("Debug: Releasing resources...")
