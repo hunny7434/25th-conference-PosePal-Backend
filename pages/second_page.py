@@ -60,6 +60,7 @@ def second_page():
 
     # "Go Back" 버튼 콜백 함수
     def go_back():
+        st.session_state.clear()
         st.session_state.page = 1
 
     # "Go Back" 버튼 생성 및 콜백 함수 연결
