@@ -8,6 +8,32 @@ import mediapipe as mp
 import tempfile
 import re
 from scipy.signal import find_peaks, savgol_filter
+import time
+
+
+def wait_until_video_loaded(video_path, max_attempts=10, delay=0.5):
+    """
+    비디오 파일이 로딩될 때까지 대기.
+
+    Args:
+        video_path (str): 로드하려는 비디오 파일 경로.
+        max_attempts (int): 최대 시도 횟수.
+        delay (float): 각 시도 간 대기 시간 (초 단위).
+
+    Returns:
+        cv2.VideoCapture: 로드된 비디오 캡처 객체.
+    """
+    cap = None
+    for attempt in range(max_attempts):
+        cap = cv2.VideoCapture(video_path)
+        if cap.isOpened():
+            print(f"Debug: Video loaded successfully on attempt {attempt + 1}.")
+            return cap
+        else:
+            print(f"Debug: Waiting for video to be ready (attempt {attempt + 1}/{max_attempts})...")
+            time.sleep(delay)
+
+    raise ValueError(f"Error: Could not open video {video_path} after {max_attempts} attempts.")
 
 def process_video_and_smooth(video_path, exercise="sideLateralRaise", window_length=31, polyorder=3):
     """
@@ -27,9 +53,10 @@ def process_video_and_smooth(video_path, exercise="sideLateralRaise", window_len
     mp_pose = mp.solutions.pose
     
     # 비디오 캡처
-    cap = cv2.VideoCapture(video_path)
-    if not cap.isOpened():
-        raise ValueError(f"Error: Could not open video {video_path}")
+    try:
+        cap = wait_until_video_loaded(video_path)
+    except ValueError as e:
+        print(str(e))
 
     frame_interval = 1
 
