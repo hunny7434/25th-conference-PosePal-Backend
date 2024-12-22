@@ -1,5 +1,7 @@
+import cv2
 import streamlit as st
 import asyncio
+from PIL import Image
 from utils.report_utils import run_posture_model
 from utils.chat_utils import async_stream_chat_with_feedback
 
@@ -7,7 +9,7 @@ def second_page():
     st.header("2. Feedback Report and Chat")
 
     # 피드백 리포트 생성
-    feedback_report = run_posture_model(st.session_state.video_path, st.session_state.exercise)
+    feedback_report, feedback_image = run_posture_model(st.session_state.video_path, st.session_state.exercise)
 
     # 세션 상태 초기화
     if "chat_history" not in st.session_state:
@@ -22,6 +24,17 @@ def second_page():
     with col1:
         st.subheader("Feedback Report")
         st.write(feedback_report)
+
+        st.subheader("Guide Lines")
+        try:
+            # OpenCV 이미지를 RGB로 변환 (Streamlit 호환)
+            image_rgb = cv2.cvtColor(feedback_image, cv2.COLOR_BGR2RGB)
+            pil_image = Image.fromarray(image_rgb)  # NumPy 배열을 PIL 이미지로 변환
+
+            # Streamlit에 이미지 표시
+            st.image(pil_image, caption="Test Image", use_container_width=True)
+        except FileNotFoundError as e:
+            print(str(e))
 
     # 채팅 인터페이스 (오른쪽)
     with col2:

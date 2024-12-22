@@ -25,7 +25,18 @@ def run_posture_model(video_path, exercise):
     report = make_report(predicted_label)
     
     # report = "video_path: " + video_path + "\n운동 자세가 전반적으로 양호합니다. 약간의 개선이 필요한 부분은 다음과 같습니다: 팔과 다리의 정렬을 더 신경 써주세요."
-    return report
+
+    # 현재 스크립트의 디렉토리 경로
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, "test.png")  # 파일 경로 생성
+
+    # 이미지 읽기
+    image = cv2.imread(file_path)
+
+    if image is None:
+        raise FileNotFoundError(f"Error: Could not read the image file at {file_path}")
+
+    return report, image
 
 # Define the function to generate a report
 def make_report(exercise: List[str]) -> str:

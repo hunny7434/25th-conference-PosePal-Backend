@@ -2,6 +2,7 @@ import streamlit as st
 from PIL import Image
 from utils.process_frame_utils import process_frame_with_model
 from utils.report_utils import *
+import tempfile
 
 st.set_page_config(
     page_title="Feedback Chat",
