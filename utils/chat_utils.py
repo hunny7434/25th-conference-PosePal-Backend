@@ -5,6 +5,8 @@ from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.chat_models import ChatOpenAI
 
+import httpx
+import json
 
 api_key = "your api key"
 
@@ -76,12 +78,63 @@ def chat_with_feedback(report:str, chat_history, user_input:str):
     return answer
 
 
-# if __name__ == "__main__":
-#     # Simulate classifier results as summaries
-#     exercise_summary = ['올바른 스쿼트 자세', '상체가 너무 앞으로 기울어짐', '무릎이 발끝보다 앞으로 나감']
-#     user_input = "나 무릎이 아픈데, 사이드 레터럴할때 무릎에도 무리가 가?"
-#     report= "첫번째 랩에서는 올바른 사이드 레터럴 자세였어요, 두번째 랩에서는 상체가 너무 앞으로 기울어져있어요, 마지막 랩에서는 무릎이 발끝보다 앞으로 나가있어요."
-#     chat_history=[]
-#     # Generate chatbot response
-#     response = chat_with_feedback(user_input,chat_history, report)
-#     print(response)
+async def async_stream_chat_with_feedback(feedback_report, chat_history, new_message):
+    """
+    OpenAI GPT 스트리밍 응답 처리 함수 (최신 API 호환)
+    """
+    if not api_key:
+        raise ValueError("OPENAI_API_KEY 환경 변수가 설정되지 않았습니다.")
+
+    url = "https://api.openai.com/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json"
+    }
+
+    # chat_history를 OpenAI API 형식에 맞게 변환
+    messages = [{"role": "system", "content": feedback_report}]
+    for entry in chat_history:
+        role = "user" if entry["is_user"] else "assistant"
+        messages.append({"role": role, "content": entry["text"]})
+    messages.append({"role": "user", "content": new_message})
+
+    payload = {
+        "model": "gpt-4",
+        "messages": messages,
+        "stream": True  # 스트리밍 활성화
+    }
+
+    # 비동기 클라이언트로 OpenAI API 스트리밍 요청
+    async with httpx.AsyncClient() as client:
+        async with client.stream("POST", url, headers=headers, json=payload) as response:
+            async for line in response.aiter_lines():
+                content = extract_content_from_stream(line)
+                if content == "[DONE]":  # 스트리밍 종료 신호
+                    break
+                if content:  # 유효한 content만 반환
+                    yield content
+
+
+def extract_content_from_stream(line):
+    """
+    스트리밍 응답의 JSON 데이터를 파싱하고, 'content' 필드 추출
+
+    Args:
+        line (str): 스트리밍 데이터 한 줄 (e.g., 'data: {json}')
+
+    Returns:
+        str or None: 추출된 'content' 값, 없으면 None
+    """
+    if line.strip() and line.startswith("data:"):
+        # `data:` 접두어 제거
+        data = line[len("data:"):].strip()
+        if data == "[DONE]":  # 스트리밍 종료 신호
+            return "[DONE]"
+        try:
+            chunk = json.loads(data)
+            if "choices" in chunk:
+                delta = chunk["choices"][0].get("delta", {})
+                return delta.get("content")  # 'content' 값 반환
+        except json.JSONDecodeError:
+            return None
+    return None
