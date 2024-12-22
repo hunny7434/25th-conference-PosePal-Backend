@@ -119,8 +119,7 @@ def first_page():
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
             temp_file.write(uploaded_file.read())
             st.session_state.video_path = temp_file.name
-
-        st.success("Video uploaded successfully.")
+            
         st.video(st.session_state.video_path)
         # st.write(f"Saved video path: {st.session_state.video_path}")  # 디버그용
         
@@ -131,15 +130,14 @@ def first_page():
         if "video_path" in st.session_state and st.session_state.video_path:
             # 여기에 비디오 처리 로직 추가
             # 예: 모델로 비디오 분석, 결과 생성 등
-            _ , prediction = run_posture_model(st.session_state.video_path)
+            report  = run_posture_model(st.session_state.video_path)
             # Check the test_data
-            st.write("Prediction: ", prediction)
+            st.write(report)
             # st.write("Test Data (Combined Segments):")
             # if isinstance(test_data, list) and all(isinstance(df, pd.DataFrame) for df in test_data):
             #     for i, df in enumerate(test_data, start=1):
             #         st.write(f"Segment {i}:")
             #         st.dataframe(df)  # Display the DataFrame as a table
             
-            st.success("Video processing completed!")
         else:
             st.warning("Please upload or record a video first.")

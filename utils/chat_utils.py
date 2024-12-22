@@ -1,6 +1,4 @@
 import os
-
-import torch
 import openai
 from langchain.chains import RetrievalQA
 from langchain.vectorstores import FAISS
@@ -11,9 +9,6 @@ import httpx
 import json
 
 api_key = "your api key"
-
-# Set device
-device = "cuda" if torch.cuda.is_available() else "cpu"
 
 embedding = OpenAIEmbeddings(openai_api_key=api_key)
 
