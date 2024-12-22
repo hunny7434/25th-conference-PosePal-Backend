@@ -1,3 +1,5 @@
+import os
+
 import torch
 import openai
 from langchain.chains import RetrievalQA
@@ -15,9 +17,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 embedding = OpenAIEmbeddings(openai_api_key=api_key)
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+file_path = os.path.join(current_dir, "exercise_domain_knowledge.txt")
 
-
-with open("exercise_domain_knowledge.txt", "r", encoding="utf-8") as file:
+with open(file_path, "r", encoding="utf-8") as file:
     documents = file.readlines()
 
     #creating vecotr store
