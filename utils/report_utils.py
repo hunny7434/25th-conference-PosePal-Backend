@@ -1,7 +1,5 @@
 from utils.test import *
 from utils.model.model import *
-import pickle
-import os
 from openai import OpenAI
 from typing import List
 
@@ -10,23 +8,23 @@ client = OpenAI(api_key="your api key")
 
 model_path = "utils/model/lateralraise_fin.pkl"  # 모델 경로 설정
         
-def run_posture_model(video_path):
+def run_posture_model(video_path, exercise):
     # Placeholder: 실제 모델을 로드하고 비디오를 분석하는 로직을 구현하세요.
     # 예시로 간단한 문자열을 반환합니다.
     smoothed_data = process_video_and_smooth(video_path)
     segments = segment_reps(smoothed_data)
     input_data = combine_segments(segments)
-    
+
     predicted_label = inference(model_path, input_data)
-    
+
     exercise = {'377': '올바른 사이드 레터럴 레이즈 자세', '378': '무릎 반동이 있는 사이드 레터럴 레이즈 자세','379': '어깨를 으쓱하는 사이드 레터럴 레이즈 자세'
              ,'380': '상완과 전완의 각도 고정이 안 된 사이드 레터럴 레이즈 자세', '381': '손목의 각도가 고정이 되지 않은 사이드 레터럴 레이즈 자세'
              , '382': '상체 반동이 있는 사이드 레터럴 레이즈 자세'}
-    
+
     # result = [exercise[i] for i in predicted_label]
     report = make_report(predicted_label)
     
-    # feedback_report = "video_path: " + video_path + "\n운동 자세가 전반적으로 양호합니다. 약간의 개선이 필요한 부분은 다음과 같습니다: 팔과 다리의 정렬을 더 신경 써주세요."
+    # report = "video_path: " + video_path + "\n운동 자세가 전반적으로 양호합니다. 약간의 개선이 필요한 부분은 다음과 같습니다: 팔과 다리의 정렬을 더 신경 써주세요."
     return report
 
 # Define the function to generate a report

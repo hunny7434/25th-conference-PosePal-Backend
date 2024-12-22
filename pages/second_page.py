@@ -1,7 +1,7 @@
 import streamlit as st
 import asyncio
 from utils.report_utils import run_posture_model
-from utils.chat_utils import chat_with_feedback, async_stream_chat_with_feedback
+from utils.chat_utils import async_stream_chat_with_feedback
 
 def second_page():
     st.header("2. Feedback Report and Chat")
