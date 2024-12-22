@@ -3,6 +3,9 @@ import cv2
 from PIL import Image
 import tempfile
 from utils.process_frame_utils import process_frame_with_model
+from utils.report_utils import *
+from utils.model.model import *
+from utils.model.Rocket import RocketTransformerClassifier
 
 st.set_page_config(
     page_title="Feedback Chat",
@@ -105,3 +108,38 @@ def first_page():
                 print("Debug: VideoWriter released successfully.")
             else:
                 print("Debug: VideoWriter was not initialized or is already released.")
+    
+    # 추가된 부분: 비디오 업로드 섹션
+    # 비디오 업로드 옵션을 제공
+    st.write("---")
+    st.header("2. Upload a Video")
+
+    uploaded_file = st.file_uploader("Upload your video file:", type=["mp4", "avi", "mov", "mkv"])
+    if uploaded_file is not None:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
+            temp_file.write(uploaded_file.read())
+            st.session_state.video_path = temp_file.name
+
+        st.success("Video uploaded successfully.")
+        st.video(st.session_state.video_path)
+        # st.write(f"Saved video path: {st.session_state.video_path}")  # 디버그용
+        
+    # 추가된 부분: 진단하기 버튼
+    st.write("---")
+
+    if st.button("진단하기"):
+        if "video_path" in st.session_state and st.session_state.video_path:
+            # 여기에 비디오 처리 로직 추가
+            # 예: 모델로 비디오 분석, 결과 생성 등
+            _ , prediction = run_posture_model(st.session_state.video_path)
+            # Check the test_data
+            st.write("Prediction: ", prediction)
+            # st.write("Test Data (Combined Segments):")
+            # if isinstance(test_data, list) and all(isinstance(df, pd.DataFrame) for df in test_data):
+            #     for i, df in enumerate(test_data, start=1):
+            #         st.write(f"Segment {i}:")
+            #         st.dataframe(df)  # Display the DataFrame as a table
+            
+            st.success("Video processing completed!")
+        else:
+            st.warning("Please upload or record a video first.")

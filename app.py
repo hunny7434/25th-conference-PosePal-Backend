@@ -1,6 +1,7 @@
 import streamlit as st
 from pages.first_page import first_page
 from pages.second_page import second_page
+from utils.model.Rocket import RocketTransformerClassifier
 
 def main():
     st.title("Exercise Posture Feedback Program")
