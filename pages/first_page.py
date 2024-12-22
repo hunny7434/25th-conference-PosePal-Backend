@@ -20,9 +20,14 @@ def toggle_camera():
 def first_page():
     st.header("1. Select an Exercise and Use the Camera")
 
+    if "exercise" not in st.session_state:
+        st.session_state.exercise = "Side-Lateral-Raise"
+
     # 운동 선택
-    exercise = st.selectbox("Select an exercise:", ["Saree", "Push-Up", "Squat", "Lunge"])
-    st.write(f"You selected: {exercise}")
+    exercise = st.selectbox("Select an exercise:", ["Side-Lateral-Raise", "Push-Up", "Squat", "Lunge"])
+
+    st.session_state.exercise = exercise
+    print(f"You selected: {st.session_state.exercise}")
 
     # 세션 상태 초기화
     if "camera_active" not in st.session_state:
@@ -42,7 +47,7 @@ def first_page():
 
     # 카메라 활성화 상태 처리
     if st.session_state.camera_active:
-        st.write("Camera is active. Click 'End Camera' to stop recording.")
+        print("Camera is active. Click 'End Camera' to stop recording.")
 
         # 카메라 설정
         cap = cv2.VideoCapture(0)
