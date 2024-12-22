@@ -4,7 +4,7 @@ from openai import OpenAI
 from typing import List
 
 # GPT API 설정
-client = OpenAI(api_key="your api key")
+client = OpenAI(api_key="api key")
 
 model_path = "utils/model/lateralraise_fin.pkl"  # 모델 경로 설정
         
@@ -44,7 +44,10 @@ def run_posture_model(video_path, exercise):
     return report, output_image
 
 # Define the function to generate a report
-def make_report(exercise: List[str]) -> str:
+def make_report(exercise: List[List[str]]) -> str:
+    
+    flattened_exercise = {code for set_codes in exercise for code in set_codes}
+    
     # Construct the prompt for feedback generation
     prompt = f"""
     당신은 전문 피트니스 코치입니다. 숫자 코드 형태로 1개의 reps마다 제공되는 사용자 운동 피드백을 참고하여, 전체 세트에 대한 통합적인 피드백을 작성하세요.
@@ -58,7 +61,7 @@ def make_report(exercise: List[str]) -> str:
     - 382: 상체 반동 있음, 나머지 조건은 만족.
     
     숫자 코드:
-    {", ".join(exercise)}
+    {", ".join(flattened_exercise)}
 
     중점을 두어야 할 부분:
     1. 운동 전반의 장점 식별.
@@ -94,7 +97,6 @@ def make_report(exercise: List[str]) -> str:
     **추천 개선 방안**:
 
     """
-
     # Send the prompt to GPT using the latest API format
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",

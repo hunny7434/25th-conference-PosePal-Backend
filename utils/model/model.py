@@ -62,9 +62,17 @@ def inference(model_path, dataframes):
         x_new_transformed = transformer.transform(x_new)
         x_new_transformed = scaler.transform(x_new_transformed)
 
-        # Predict class
-        prediction = classifier.predict(x_new_transformed)
-        result.append(prediction[0])
+        # # Predict class
+        # prediction = classifier.predict(x_new_transformed)
+        # result.append(prediction[0])
+        
+        confidence_scores = classifier.decision_function(x_new_transformed)
+
+        # Get top 3 classes based on confidence scores
+        top_3_indices = np.argsort(confidence_scores[0])[-3:][::-1]
+        top_3_predictions = [classifier.classes_[i] for i in top_3_indices]
+
+        result.append(top_3_predictions)
 
     return result  # Return the predicted labels
 
