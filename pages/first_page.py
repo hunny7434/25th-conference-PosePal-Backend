@@ -1,3 +1,4 @@
+import tempfile
 import streamlit as st
 from PIL import Image
 from utils.process_frame_utils import process_frame_with_model

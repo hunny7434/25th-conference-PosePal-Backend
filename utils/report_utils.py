@@ -14,6 +14,11 @@ def run_posture_model(video_path, exercise):
     smoothed_data = process_video_and_smooth(video_path)
     segments = segment_reps(smoothed_data)
     input_data = combine_segments(segments)
+    
+    first_dataframe = input_data[0]
+    peak_frame_number = first_dataframe.iloc[0]['frame_no']
+    user_image = extract_frame_as_image(video_path, peak_frame_number)
+    output_image = process_pose_comparison("utils/gt_images/sideLateralRaise.jpg", user_image)
 
     predicted_label = inference(model_path, input_data)
 
@@ -26,17 +31,17 @@ def run_posture_model(video_path, exercise):
     
     # report = "video_path: " + video_path + "\n운동 자세가 전반적으로 양호합니다. 약간의 개선이 필요한 부분은 다음과 같습니다: 팔과 다리의 정렬을 더 신경 써주세요."
 
-    # 현재 스크립트의 디렉토리 경로
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(current_dir, "test.png")  # 파일 경로 생성
+    # # 현재 스크립트의 디렉토리 경로
+    # current_dir = os.path.dirname(os.path.abspath(__file__))
+    # file_path = os.path.join(current_dir, "test.png")  # 파일 경로 생성
 
-    # 이미지 읽기
-    image = cv2.imread(file_path)
+    # # 이미지 읽기
+    # image = cv2.imread(file_path)
 
-    if image is None:
-        raise FileNotFoundError(f"Error: Could not read the image file at {file_path}")
+    # if image is None:
+    #     raise FileNotFoundError(f"Error: Could not read the image file at {file_path}")
 
-    return report, image
+    return report, output_image
 
 # Define the function to generate a report
 def make_report(exercise: List[str]) -> str:
