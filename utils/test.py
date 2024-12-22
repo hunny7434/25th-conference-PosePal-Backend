@@ -2,8 +2,44 @@ import cv2
 import pandas as pd
 import numpy as np
 import mediapipe as mp
+from PIL import Image
 from scipy.signal import find_peaks, savgol_filter
 import time
+
+def extract_frame_as_image(video_path, frame_number):
+    """
+    비디오에서 특정 프레임을 추출하고 PIL.Image 객체로 반환합니다.
+
+    Args:
+        video_path (str): 비디오 파일 경로.
+        frame_number (int): 추출할 프레임 번호.
+
+    Returns:
+        PIL.Image.Image: 추출된 프레임을 PIL 이미지 객체로 반환.
+    """
+    # 비디오 파일 열기
+    cap = cv2.VideoCapture(video_path)
+
+    if not cap.isOpened():
+        raise ValueError(f"Error: Could not open video {video_path}")
+
+    # 원하는 프레임 번호로 이동
+    cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
+
+    # 해당 프레임 읽기
+    ret, frame = cap.read()
+
+    # 비디오 캡처 객체 해제
+    cap.release()
+
+    if not ret:
+        raise ValueError(f"Error: Could not read frame {frame_number} from {video_path}")
+
+    # 프레임을 BGR에서 RGB로 변환한 뒤 PIL.Image 객체로 변환
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    image = Image.fromarray(frame_rgb)
+
+    return image
 
 
 def wait_until_video_loaded(video_path, max_attempts=10, delay=0.5):
@@ -239,4 +275,72 @@ def combine_segments(segments):
         # print(f"Combined segment {i + 1} and {i + 2} into a new segment with {len(combined_segment)} rows.")
 
     return combined_segments
+
+
+
+####################################################################################################################
+
+# MediaPipe Pose 초기화
+mp_pose = mp.solutions.pose
+pose = mp_pose.Pose(static_image_mode=True, model_complexity=2)
+
+def read_image_from_path(image_path):
+    image = cv2.imread(image_path)
+    if image is None or image.size == 0:
+        raise FileNotFoundError(f"Image at {image_path} not found or is empty.")
+    return image
+
+def extract_keypoints_from_image(image):
+    if image is None or image.size == 0:
+        raise ValueError("Image object is empty or invalid.")
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    result = pose.process(image_rgb)
+    if result.pose_landmarks:
+        return np.array([[lm.x, lm.y, lm.z] for lm in result.pose_landmarks.landmark])
+    else:
+        raise ValueError("Pose landmarks not detected.")
+
+def normalize_pose(keypoints, reference_indices=(11, 12)):
+    center = np.mean(keypoints[reference_indices, :2], axis=0)
+    keypoints[:, :2] -= center
+    ref_distance = np.linalg.norm(keypoints[reference_indices[0], :2] - keypoints[reference_indices[1], :2])
+    keypoints[:, :2] /= ref_distance
+    return keypoints
+
+def draw_equal_scaled_skeleton(keypoints1, keypoints2, width, height):
+    canvas = np.ones((height, width, 3), dtype=np.uint8) * 255
+    scale = min(width, height) / 4
+    keypoints1[:, :2] *= scale
+    keypoints2[:, :2] *= scale
+    center_x, center_y = width // 2, height // 2
+    keypoints1[:, :2] += [center_x, center_y]
+    keypoints2[:, :2] += [center_x, center_y]
+    for kp1, kp2 in mp_pose.POSE_CONNECTIONS:
+        cv2.line(canvas, tuple(keypoints1[kp1, :2].astype(int)), tuple(keypoints1[kp2, :2].astype(int)), (0, 255, 0), 2)
+        cv2.line(canvas, tuple(keypoints2[kp1, :2].astype(int)), tuple(keypoints2[kp2, :2].astype(int)), (0, 0, 255), 2)
+    return canvas
+
+def process_pose_comparison(image1_path, image2_object):
+    try:
+        # 이미지 로드 및 키포인트 추출
+        image1 = read_image_from_path(image1_path)
+        
+        # Convert PIL.Image to NumPy array if necessary
+        if isinstance(image2_object, Image.Image):  # Check if it's a PIL.Image object
+            image2_object = np.array(image2_object)
+        
+        if image2_object is None or image2_object.size == 0:
+            raise ValueError("Second image object is empty or invalid.")
+        
+        keypoints1 = normalize_pose(extract_keypoints_from_image(image1))
+        keypoints2 = normalize_pose(extract_keypoints_from_image(image2_object))
+
+        # 캔버스 크기 지정
+        height, width, _ = image1.shape
+        skeleton_image = draw_equal_scaled_skeleton(keypoints1, keypoints2, width, height)
+
+        return skeleton_image
+    except Exception as e:
+        print(f"Error during pose comparison: {e}")
+        return None
 
