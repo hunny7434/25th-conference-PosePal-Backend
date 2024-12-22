@@ -49,6 +49,7 @@ def second_page():
                     with st.chat_message("user" if message["is_user"] else "assistant"):
                         st.markdown(message["text"])
 
+            st.session_state.chat_history.append({"is_user": False, "text": ""})
             with last_message_placeholder.container():
                 with st.chat_message("assistant"):
                     st.markdown("")

@@ -32,11 +32,7 @@ async def async_stream_chat_with_feedback(report, chat_history, user_input):
     )
 
     # chat_history를 OpenAI API 형식에 맞게 변환
-    messages = [{"role": "system", "content": prompt}]
-    for entry in chat_history:
-        role = "user" if entry["is_user"] else "assistant"
-        messages.append({"role": role, "content": entry["text"]})
-    messages.append({"role": "user", "content": user_input})
+    messages = [{"role": "system", "content": prompt}, {"role": "user", "content": user_input}]
 
     payload = {
         "model": "gpt-4",
