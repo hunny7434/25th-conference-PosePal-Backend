@@ -6,7 +6,7 @@ def second_page():
     st.header("2. Feedback Report and Chat")
 
     # 피드백 리포트 생성
-    feedback_report = run_posture_model(st.session_state.video_path)
+    feedback_report = run_posture_model(st.session_state.video_path, st.session_state.exercise)
 
     # 세션 상태 초기화
     if "chat_history" not in st.session_state:
