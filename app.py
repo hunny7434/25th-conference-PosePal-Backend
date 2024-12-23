@@ -4,7 +4,11 @@ from pages.second_page import second_page
 from utils.model.Rocket import RocketTransformerClassifier
 
 def main():
-    st.title("Exercise Posture Feedback Program")
+    st.set_page_config(
+        layout="wide",  # 전체 화면 너비로 설정
+    )
+
+    st.title("PosePal")
 
     # Initialize session state
     if "page" not in st.session_state:

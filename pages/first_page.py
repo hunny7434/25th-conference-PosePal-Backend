@@ -4,10 +4,6 @@ from utils.process_frame_utils import process_frame_with_model
 from utils.report_utils import *
 import tempfile
 
-st.set_page_config(
-    layout="wide",  # 전체 화면 너비로 설정
-)
-
 # 상태 전환 및 페이지 이동을 위한 콜백 함수
 def toggle_camera():
     st.session_state.camera_active = not st.session_state.camera_active
