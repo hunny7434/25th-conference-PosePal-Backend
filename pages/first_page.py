@@ -15,9 +15,6 @@ def click_diagnosis():
     if "video_path" in st.session_state and st.session_state.video_path:
         st.session_state.page = 2
 
-    else:
-        st.warning("Please upload or record a video first.")
-
 def first_page():
     st.header("🏋️‍♂️ 운동 선택하기")
 
@@ -121,5 +118,7 @@ def first_page():
         st.write("---")
 
         if st.button("진단하기", on_click=click_diagnosis):
+            if not ("video_path" in st.session_state and st.session_state.video_path):
+                st.warning("Please upload or record a video first.")
             # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
             pass
