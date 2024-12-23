@@ -5,23 +5,8 @@ from utils.report_utils import *
 import tempfile
 
 st.set_page_config(
-    page_title="Feedback Chat",
     layout="wide",  # 전체 화면 너비로 설정
-    initial_sidebar_state="collapsed",  # 사이드바 초기 상태 설정
 )
-
-# 사이드바와 상단 토글 버튼 숨기기
-hide_menu_button = """
-    <style>
-        [data-testid="stSidebar"] {
-            display: none;  /* 사이드바 숨기기 */
-        }
-        [data-testid="stSidebarNav"] {
-            display: none;  /* 사이드바 네비게이션 숨기기 */
-        }
-    </style>
-"""
-st.markdown(hide_menu_button, unsafe_allow_html=True)
 
 # 상태 전환 및 페이지 이동을 위한 콜백 함수
 def toggle_camera():
