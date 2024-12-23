@@ -5,6 +5,7 @@ from utils.model.Rocket import RocketTransformerClassifier
 
 def main():
     st.set_page_config(
+        page_icon="💪",
         layout="wide",  # 전체 화면 너비로 설정
     )
 

@@ -3,8 +3,18 @@ from utils.model.model import *
 from openai import OpenAI
 from typing import List
 
+from dotenv import load_dotenv
+import os
+
+# .env 파일 로드
+load_dotenv()
+
+# 환경 변수에서 API 키 가져오기
+api_key = os.getenv("GPT_API_KEY")
+
+
 # GPT API 설정
-client = OpenAI(api_key="api key")
+client = OpenAI(api_key=api_key)
 exercise_model_map = {
     "Side-Lateral-Raise": "utils/model/lateralraise_fin.pkl",
     "Lunge": "utils/model/lunge_fin.pkl"

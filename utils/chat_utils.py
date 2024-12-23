@@ -1,7 +1,15 @@
+import os
+
 import httpx
 import json
 
-api_key = "api key"
+from dotenv import load_dotenv
+
+# .env 파일 로드
+load_dotenv()
+
+# 환경 변수에서 API 키 가져오기
+api_key = os.getenv("GPT_API_KEY")
 
 async def async_stream_chat_with_feedback(report, chat_history, user_input):
     """
