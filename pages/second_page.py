@@ -9,8 +9,17 @@ from utils.chat_utils import async_stream_chat_with_feedback
 def second_page():
     st.header("운동 결과 분석 📊")
 
+    # 기존 화면을 모두 지우고 로딩 메시지 표시
+    loading_placeholder = st.empty()  # 로딩 화면용 자리 표시자
+
+    with loading_placeholder.container():
+        st.write("Analyzing your exercise... Please wait ⏳")  # 로딩 메시지 표시
+
     # 피드백 리포트 생성
     feedback_report, feedback_image = run_posture_model(st.session_state.video_path, st.session_state.exercise)
+
+    # 로딩 메시지 제거
+    loading_placeholder.empty()
 
     # 세션 상태 초기화
     if "chat_history" not in st.session_state:
