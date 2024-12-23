@@ -66,7 +66,7 @@ def wait_until_video_loaded(video_path, max_attempts=10, delay=0.5):
 
     raise ValueError(f"Error: Could not open video {video_path} after {max_attempts} attempts.")
 
-def process_video_and_smooth(video_path, exercise="sideLateralRaise", window_length=31, polyorder=3):
+def process_video_and_smooth(video_path, exercise, window_length=31, polyorder=3):
     """
     비디오를 처리하고, 포즈 추정을 수행하며, 중간 프레임을 저장하지 않고 매끄럽게 처리된 DataFrame을 생성합니다.
 
@@ -92,7 +92,7 @@ def process_video_and_smooth(video_path, exercise="sideLateralRaise", window_len
     frame_interval = 1
 
     selected_landmarks_mapping = {
-        "sideLateralRaise": [
+        "Side-Lateral-Raise": [
             mp_pose.PoseLandmark.LEFT_SHOULDER,
             mp_pose.PoseLandmark.RIGHT_SHOULDER,
             mp_pose.PoseLandmark.LEFT_ELBOW,
@@ -105,7 +105,44 @@ def process_video_and_smooth(video_path, exercise="sideLateralRaise", window_len
             mp_pose.PoseLandmark.RIGHT_INDEX,
             mp_pose.PoseLandmark.LEFT_THUMB,
             mp_pose.PoseLandmark.RIGHT_THUMB,
+        ],
+        
+        "Lunge":  [
+            mp_pose.PoseLandmark.NOSE,           # 0
+            mp_pose.PoseLandmark.LEFT_EYE_INNER, # 1
+            mp_pose.PoseLandmark.LEFT_EYE,       # 2
+            mp_pose.PoseLandmark.LEFT_EYE_OUTER, # 3
+            mp_pose.PoseLandmark.RIGHT_EYE_INNER,# 4
+            mp_pose.PoseLandmark.RIGHT_EYE,      # 5
+            mp_pose.PoseLandmark.RIGHT_EYE_OUTER,# 6
+            mp_pose.PoseLandmark.LEFT_EAR,       # 7
+            mp_pose.PoseLandmark.RIGHT_EAR,      # 8
+            mp_pose.PoseLandmark.MOUTH_LEFT,     # 9
+            mp_pose.PoseLandmark.MOUTH_RIGHT,    # 10
+            mp_pose.PoseLandmark.LEFT_SHOULDER,  # 11
+            mp_pose.PoseLandmark.RIGHT_SHOULDER, # 12
+            mp_pose.PoseLandmark.LEFT_ELBOW,     # 13
+            mp_pose.PoseLandmark.RIGHT_ELBOW,    # 14
+            mp_pose.PoseLandmark.LEFT_WRIST,     # 15
+            mp_pose.PoseLandmark.RIGHT_WRIST,    # 16
+            mp_pose.PoseLandmark.LEFT_PINKY,     # 17
+            mp_pose.PoseLandmark.RIGHT_PINKY,    # 18
+            mp_pose.PoseLandmark.LEFT_INDEX,     # 19
+            mp_pose.PoseLandmark.RIGHT_INDEX,    # 20
+            mp_pose.PoseLandmark.LEFT_THUMB,     # 21
+            mp_pose.PoseLandmark.RIGHT_THUMB,    # 22
+            mp_pose.PoseLandmark.LEFT_HIP,       # 23
+            mp_pose.PoseLandmark.RIGHT_HIP,      # 24
+            mp_pose.PoseLandmark.LEFT_KNEE,      # 25
+            mp_pose.PoseLandmark.RIGHT_KNEE,     # 26
+            mp_pose.PoseLandmark.LEFT_ANKLE,     # 27
+            mp_pose.PoseLandmark.RIGHT_ANKLE,    # 28
+            mp_pose.PoseLandmark.LEFT_HEEL,      # 29
+            mp_pose.PoseLandmark.RIGHT_HEEL,     # 30
+            mp_pose.PoseLandmark.LEFT_FOOT_INDEX,# 31
+            mp_pose.PoseLandmark.RIGHT_FOOT_INDEX# 32
         ]
+
     }
 
     if exercise not in selected_landmarks_mapping:

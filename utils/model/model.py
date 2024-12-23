@@ -28,7 +28,7 @@ def pad_with_last_row_new(series, fixed_rows):
     return series
 
 
-def inference(model_path, dataframes):
+def inference(model_path, dataframes, exercise):
     """
     Load a saved RocketTransformerClassifier model and perform inference on a list of data frames.
 
@@ -40,6 +40,13 @@ def inference(model_path, dataframes):
         list: List of predicted labels for each DataFrame.
     """
     # Load the saved model
+    exercise_map = {
+        "Side-Lateral-Raise": 11,
+        "Lunge" : 15,
+    }
+    
+    print(model_path)
+
     with open(model_path, "rb") as f:
         rocket_classifier = pickle.load(f)
         
@@ -53,7 +60,7 @@ def inference(model_path, dataframes):
     for df in dataframes:
         # Extract time-series data from DataFrame
         time_series = df.iloc[:, 1:].values  # Exclude non-time-series columns
-        time_series = pad_with_last_row_new(time_series, fixed_rows=11)  # Ensure fixed number of rows
+        time_series = pad_with_last_row_new(time_series, fixed_rows=exercise_map[exercise])  # Ensure fixed number of rows
 
         # Reshape for inference (Rocket expects 3D array: [samples, time_steps, features])
         x_new = np.expand_dims(time_series, axis=0)  # Add batch dimension
@@ -62,9 +69,17 @@ def inference(model_path, dataframes):
         x_new_transformed = transformer.transform(x_new)
         x_new_transformed = scaler.transform(x_new_transformed)
 
-        # Predict class
-        prediction = classifier.predict(x_new_transformed)
-        result.append(prediction[0])
+        # # Predict class
+        # prediction = classifier.predict(x_new_transformed)
+        # result.append(prediction[0])
+        
+        confidence_scores = classifier.decision_function(x_new_transformed)
+
+        # Get top 3 classes based on confidence scores
+        top_3_indices = np.argsort(confidence_scores[0])[-3:][::-1]
+        top_3_predictions = [classifier.classes_[i] for i in top_3_indices]
+
+        result.append(top_3_predictions)
 
     return result  # Return the predicted labels
 

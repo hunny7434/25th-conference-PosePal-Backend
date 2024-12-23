@@ -1,7 +1,7 @@
 import httpx
 import json
 
-api_key = "your api key"
+api_key = "api key"
 
 async def async_stream_chat_with_feedback(report, chat_history, user_input):
     """
