@@ -19,7 +19,7 @@ def click_diagnosis():
         st.warning("Please upload or record a video first.")
 
 def first_page():
-    st.header("🏋️‍♂️ 운동 선택하고 카메라 사용하기")
+    st.header("🏋️‍♂️ 운동 선택하기")
 
     if "exercise" not in st.session_state:
         st.session_state.exercise = "Side-Lateral-Raise"
@@ -38,9 +38,11 @@ def first_page():
     if "page" not in st.session_state:
         st.session_state.page = 1
 
+    st.write("---")
+    st.header("📸 카메라로 촬영하기")
     # 버튼 생성 및 상태 전환
     if st.button(
-        "Start Camera" if not st.session_state.camera_active else "End Camera",
+        "촬영 시작" if not st.session_state.camera_active else "촬영 완료",
         on_click=toggle_camera,
     ):
         # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
