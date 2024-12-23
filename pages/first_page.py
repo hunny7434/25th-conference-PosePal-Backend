@@ -11,6 +11,13 @@ def toggle_camera():
     if not st.session_state.camera_active and st.session_state.video_path:
         st.session_state.page = 2
 
+def click_diagnosis():
+    if "video_path" in st.session_state and st.session_state.video_path:
+        st.session_state.page = 2
+
+    else:
+        st.warning("Please upload or record a video first.")
+
 def first_page():
     st.header("1. Select an Exercise and Use the Camera")
 
@@ -106,9 +113,6 @@ def first_page():
     # 추가된 부분: 진단하기 버튼
     st.write("---")
 
-    if st.button("진단하기"):
-        if "video_path" in st.session_state and st.session_state.video_path:
-            st.session_state.page = 2
-            
-        else:
-            st.warning("Please upload or record a video first.")
+    if st.button("진단하기", on_click=click_diagnosis):
+        # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
+        pass
