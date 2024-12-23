@@ -99,7 +99,7 @@ def main():
 
     st.markdown(
         """
-        <h1 style="text-align: center; font-size: 90px; margin-top: 20px; font-family: Roboto;">
+        <h1 style="text-align: center; font-size: 100px; margin-top: 20px; font-family: Roboto;">
             PosePal
         </h1>
         """,
