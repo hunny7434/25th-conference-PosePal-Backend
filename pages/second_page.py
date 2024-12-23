@@ -5,8 +5,9 @@ from PIL import Image
 from utils.report_utils import run_posture_model
 from utils.chat_utils import async_stream_chat_with_feedback
 
+
 def second_page():
-    st.header("2. Feedback Report and Chat")
+    st.header("운동 결과 분석 📊")
 
     # 피드백 리포트 생성
     feedback_report, feedback_image = run_posture_model(st.session_state.video_path, st.session_state.exercise)
@@ -22,10 +23,10 @@ def second_page():
 
     # 리포트 표시 (왼쪽)
     with col1:
-        st.subheader("Feedback Report")
+        st.subheader("분석 리포트📄")
         st.write(feedback_report)
 
-        st.subheader("Guide Lines")
+        st.subheader("상세 프레임 이미지")
         try:
             # OpenCV 이미지를 RGB로 변환 (Streamlit 호환)
             image_rgb = cv2.cvtColor(feedback_image, cv2.COLOR_BGR2RGB)
@@ -38,7 +39,7 @@ def second_page():
 
     # 채팅 인터페이스 (오른쪽)
     with col2:
-        st.subheader("Chat about your feedback")
+        st.subheader("💬 챗봇과 대화하기")
 
         # 채팅 기록 표시 영역
         chat_placeholder = st.empty()
@@ -51,7 +52,7 @@ def second_page():
         last_message_placeholder = st.empty()
 
         # 입력창
-        user_input = st.chat_input("Type your message:")
+        user_input = st.chat_input("운동 자세에 대해 챗봇과 대화하기:")
         if user_input:
             # 새 메시지 저장
             st.session_state.new_message = user_input
