@@ -9,13 +9,20 @@ from sklearn.linear_model import RidgeClassifierCV
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-class RocketTransformerClassifier:
-    def __init__(self):
-        self.classifiers_mapping = {}
+exercise_map = {
+    "Side-Lateral-Raise": 10000,
+    "Lunge" : 20000,
+}
 
-    def fit_rocket(self, x_train, y_train, kernels=10000):
+class RocketTransformerClassifier:
+    
+    def __init__(self, exercise):
+        self.classifiers_mapping = {}
+        self.exercise = exercise
+
+    def fit_rocket(self, x_train, y_train):
         # Initialize and fit Rocket transformer
-        rocket = Rocket(num_kernels=kernels, normalise=False)
+        rocket = Rocket(num_kernels=exercise_map[self.exercise], normalise=False)
         rocket.fit(x_train)
         x_training_transform = rocket.transform(x_train)
 
