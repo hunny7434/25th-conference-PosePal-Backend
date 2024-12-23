@@ -16,6 +16,8 @@ def click_diagnosis():
         st.session_state.page = 2
 
 def first_page():
+    st.write(" ")
+    st.write(" ")
     st.header("🏋️‍♂️ 운동 선택하기")
 
     if "exercise" not in st.session_state:
@@ -41,6 +43,7 @@ def first_page():
 
     with col1:
         st.header("📸 카메라로 촬영하기")
+        st.write(" ")
         st.write(" ")
         # 버튼 생성 및 상태 전환
         if st.button(

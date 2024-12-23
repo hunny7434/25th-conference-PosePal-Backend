@@ -97,7 +97,14 @@ def main():
     # Call this function at the beginning of your app
     add_custom_css()
 
-    st.title("PosePal 💪")
+    st.markdown(
+        """
+        <h1 style="text-align: center; font-size: 90px; margin-top: 20px;">
+            PosePal 💪
+        </h1>
+        """,
+        unsafe_allow_html=True,
+    )
 
     # Initialize session state
     if "page" not in st.session_state:

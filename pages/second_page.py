@@ -7,13 +7,28 @@ from utils.chat_utils import async_stream_chat_with_feedback
 
 
 def second_page():
-    st.header("운동 결과 분석 📊")
-
+    # st.header("운동 결과 분석 📊")
+    st.markdown(
+        """
+        <h2 style="text-align: center; font-size: 40px; margin-top: 20px;">
+            운동 결과 분석 📊
+        </h2>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.write("---")
     # 기존 화면을 모두 지우고 로딩 메시지 표시
     loading_placeholder = st.empty()  # 로딩 화면용 자리 표시자
 
     with loading_placeholder.container():
-        st.write("Analyzing your exercise... Please wait ⏳")  # 로딩 메시지 표시
+        st.markdown(
+            """
+            <div style="text-align: center; font-size: 20px;">
+                Analyzing your exercise... Please wait ⏳
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 
     # 피드백 리포트 생성
     feedback_report, feedback_image = run_posture_model(st.session_state.video_path, st.session_state.exercise)
