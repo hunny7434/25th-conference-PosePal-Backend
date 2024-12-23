@@ -39,82 +39,87 @@ def first_page():
         st.session_state.page = 1
 
     st.write("---")
-    st.header("📸 카메라로 촬영하기")
-    # 버튼 생성 및 상태 전환
-    if st.button(
-        "촬영 시작" if not st.session_state.camera_active else "촬영 완료",
-        on_click=toggle_camera,
-    ):
-        # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
-        pass
 
-    # 카메라 활성화 상태 처리
-    if st.session_state.camera_active:
-        print("Camera is active. Click 'End Camera' to stop recording.")
+    col1, col2 = st.columns(2)
 
-        # 카메라 설정
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
-            st.error("Failed to open the camera.")
-            return
+    with col1:
+        st.header("📸 카메라로 촬영하기")
+        st.write(" ")
+        # 버튼 생성 및 상태 전환
+        if st.button(
+            "촬영 시작" if not st.session_state.camera_active else "촬영 완료",
+            on_click=toggle_camera,
+        ):
+            # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
+            pass
 
-        st_frame = st.empty()  # 빈 프레임을 Streamlit에 생성
-        video_writer = None
+        # 카메라 활성화 상태 처리
+        if st.session_state.camera_active:
+            print("Camera is active. Click 'End Camera' to stop recording.")
 
-        # 프레임 처리
-        try:
-            while st.session_state.camera_active:
-                ret, frame = cap.read()
-                if not ret:
-                    st.error("Failed to capture video.")
-                    break
+            # 카메라 설정
+            cap = cv2.VideoCapture(0)
+            if not cap.isOpened():
+                st.error("Failed to open the camera.")
+                return
 
-                flipped_frame = cv2.flip(frame, 1)
+            st_frame = st.empty()  # 빈 프레임을 Streamlit에 생성
+            video_writer = None
 
-                # 모델로 프레임 처리
-                processed_frame = process_frame_with_model(flipped_frame)
+            # 프레임 처리
+            try:
+                while st.session_state.camera_active:
+                    ret, frame = cap.read()
+                    if not ret:
+                        st.error("Failed to capture video.")
+                        break
 
-                # 프레임을 RGB로 변환 후 Streamlit에 표시
-                frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
-                frame_pil = Image.fromarray(frame_rgb)
-                st_frame.image(frame_pil, caption="Real-time Video", use_container_width=True)
+                    flipped_frame = cv2.flip(frame, 1)
 
-                # 비디오 저장 설정
-                if video_writer is None:
-                    fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 코덱 설정
-                    temp_video_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-                    st.session_state.video_path = temp_video_file.name
-                    video_writer = cv2.VideoWriter(temp_video_file.name, fourcc, 20.0, (flipped_frame.shape[1], flipped_frame.shape[0]))
+                    # 모델로 프레임 처리
+                    processed_frame = process_frame_with_model(flipped_frame)
 
-                    if not video_writer.isOpened():
-                        print("Error: VideoWriter failed to initialize.")
-                    else:
-                        print(f"VideoWriter initialized successfully. Saving to: {st.session_state.video_path}")
+                    # 프레임을 RGB로 변환 후 Streamlit에 표시
+                    frame_rgb = cv2.cvtColor(processed_frame, cv2.COLOR_BGR2RGB)
+                    frame_pil = Image.fromarray(frame_rgb)
+                    st_frame.image(frame_pil, caption="Real-time Video", use_container_width=True)
 
-                # 원본 프레임 저장
-                video_writer.write(flipped_frame)
+                    # 비디오 저장 설정
+                    if video_writer is None:
+                        fourcc = cv2.VideoWriter_fourcc(*'avc1')  # 코덱 설정
+                        temp_video_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+                        st.session_state.video_path = temp_video_file.name
+                        video_writer = cv2.VideoWriter(temp_video_file.name, fourcc, 20.0, (flipped_frame.shape[1], flipped_frame.shape[0]))
 
-        finally:
-            cap.release()
-            if video_writer:
-                video_writer.release()
-    
-    # 추가된 부분: 비디오 업로드 섹션
-    # 비디오 업로드 옵션을 제공
-    st.write("---")
-    st.header("📤 운동 영상 업로드")
+                        if not video_writer.isOpened():
+                            print("Error: VideoWriter failed to initialize.")
+                        else:
+                            print(f"VideoWriter initialized successfully. Saving to: {st.session_state.video_path}")
 
-    uploaded_file = st.file_uploader("Upload your video file:", type=["mp4", "avi", "mov", "mkv"])
-    if uploaded_file is not None:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
-            temp_file.write(uploaded_file.read())
-            st.session_state.video_path = temp_file.name
-            
-        st.video(st.session_state.video_path)
-        
-    # 추가된 부분: 진단하기 버튼
-    st.write("---")
+                    # 원본 프레임 저장
+                    video_writer.write(flipped_frame)
 
-    if st.button("진단하기", on_click=click_diagnosis):
-        # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
-        pass
+            finally:
+                cap.release()
+                if video_writer:
+                    video_writer.release()
+
+    with col2:
+        # 추가된 부분: 비디오 업로드 섹션
+        # 비디오 업로드 옵션을 제공
+        st.header("📤 운동 영상 업로드")
+
+        uploaded_file = st.file_uploader("Upload your video file:", type=["mp4", "avi", "mov", "mkv"])
+        if uploaded_file is not None:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_file:
+                temp_file.write(uploaded_file.read())
+                st.session_state.video_path = temp_file.name
+
+            st.video(st.session_state.video_path)
+
+        # 추가된 부분: 진단하기 버튼
+        st.write("---")
+
+        if st.button("진단하기", on_click=click_diagnosis):
+            # 상태 변경에 따라 Streamlit이 자동으로 UI를 갱신
+            pass
