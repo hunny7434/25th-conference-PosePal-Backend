@@ -345,16 +345,29 @@ def normalize_pose(keypoints, reference_indices=(11, 12)):
     return keypoints
 
 def draw_equal_scaled_skeleton(keypoints1, keypoints2, width, height):
+    # 흰색 배경 추가
     canvas = np.ones((height, width, 3), dtype=np.uint8) * 255
+
+    # 스켈레톤 크기 조정
     scale = min(width, height) / 4
     keypoints1[:, :2] *= scale
     keypoints2[:, :2] *= scale
     center_x, center_y = width // 2, height // 2
     keypoints1[:, :2] += [center_x, center_y]
     keypoints2[:, :2] += [center_x, center_y]
+
+    # 관절 및 연결 디자인 개선
     for kp1, kp2 in mp_pose.POSE_CONNECTIONS:
-        cv2.line(canvas, tuple(keypoints1[kp1, :2].astype(int)), tuple(keypoints1[kp2, :2].astype(int)), (0, 255, 0), 2)
-        cv2.line(canvas, tuple(keypoints2[kp1, :2].astype(int)), tuple(keypoints2[kp2, :2].astype(int)), (0, 0, 255), 2)
+        # 첫 번째 스켈레톤 (빨간색) - BGR 순서로 색상 설정
+        cv2.line(canvas, tuple(keypoints1[kp1, :2].astype(int)), tuple(keypoints1[kp2, :2].astype(int)), (0, 255, 0), 10, lineType=cv2.LINE_AA)
+        cv2.circle(canvas, tuple(keypoints1[kp1, :2].astype(int)), 15, (0, 255, 0), -1)
+        cv2.circle(canvas, tuple(keypoints1[kp2, :2].astype(int)), 15, (0, 255, 0), -1)
+        
+        # 두 번째 스켈레톤 (초록색)
+        cv2.line(canvas, tuple(keypoints2[kp1, :2].astype(int)), tuple(keypoints2[kp2, :2].astype(int)), (0, 0, 225), 10, lineType=cv2.LINE_AA)
+        cv2.circle(canvas, tuple(keypoints2[kp1, :2].astype(int)), 15, (0, 0, 255), -1)
+        cv2.circle(canvas, tuple(keypoints2[kp2, :2].astype(int)), 15, (0, 0, 255), -1)
+
     return canvas
 
 def process_pose_comparison(image1_path, image2_object):

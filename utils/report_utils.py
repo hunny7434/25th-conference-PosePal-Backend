@@ -30,7 +30,10 @@ def run_posture_model(video_path, exercise):
     
     ## 레포트에 보일 사진을 위한 파트
     first_dataframe = input_data[0]
-    peak_frame_number = first_dataframe.iloc[0]['frame_no']
+    #peak_frame_number = first_dataframe.iloc[0]['frame_no']
+    min_row = first_dataframe.loc[first_dataframe['LEFT_ELBOW_y'].idxmin()]
+    peak_frame_number = min_row['frame_no']
+
     user_image = extract_frame_as_image(video_path, peak_frame_number)
     output_image = process_pose_comparison(f"utils/gt_images/{exercise}.jpg", user_image)
     
