@@ -24,7 +24,7 @@ def second_page():
         st.markdown(
             """
             <div style="text-align: center; font-size: 20px;">
-                Analyzing your exercise... Please wait ⏳
+                운동을 분석 중입니다... 잠시만 기다려 주세요 ⏳
             </div>
             """,
             unsafe_allow_html=True,
@@ -57,7 +57,7 @@ def second_page():
             pil_image = Image.fromarray(image_rgb)  # NumPy 배열을 PIL 이미지로 변환
 
             # Streamlit에 이미지 표시
-            st.image(pil_image, caption="Test Image", use_container_width=True)
+            st.image(pil_image, use_container_width=True)
         except FileNotFoundError as e:
             print(str(e))
 
@@ -121,4 +121,4 @@ def second_page():
         st.session_state.page = 1
 
     # "Go Back" 버튼 생성 및 콜백 함수 연결
-    st.button("Go Back", on_click=go_back)
+    st.button("뒤로가기", on_click=go_back)
